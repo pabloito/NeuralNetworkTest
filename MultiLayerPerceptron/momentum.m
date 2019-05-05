@@ -1,8 +1,7 @@
 function M = momentum(NN, layer_index)
   source("config.conf");
 
-  #W = NN.weights(layer_index,:);
-  W = [1,2;3,4]
+  W = NN.weights(layer_index,:);
   [m,n] = size(W);
   M = zeros(m,n);
   

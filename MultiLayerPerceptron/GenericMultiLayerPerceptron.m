@@ -59,7 +59,7 @@ classdef GenericMultiLayerPerceptron
       inputs = shuffle(inputs,perm);
       expected_outputs = shuffle(expected_outputs,perm);
       #--------------------------------
-      inputUnits 		 = NN.units_per_layer(1);
+      inputUnits 		 = size(inputs)(1);
       
       outputs = zeros(size(expected_outputs));
       
@@ -85,8 +85,13 @@ classdef GenericMultiLayerPerceptron
           analized_rows = analized_rows + 1;
          outputs(index,1)=output; 
         endfor
-        error=immse(expected_outputs,outputs);
+        error=immse(expected_outputs,outputs)
+        outputs
+        NN.weights
       endwhile
+      error
+      NN.weights
+      analized_rows
       output = training_output(error,NN.weights,analized_rows); 
     endfunction
     
@@ -146,7 +151,7 @@ classdef GenericMultiLayerPerceptron
         
         current_weight= (cell2mat(NN.weights(weight_index,1)))';
         
-        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *product)' + momentum(NN, weight_index);
+        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *product)';# + momentum(NN, weight_index);
       endfor
     endfunction
     
