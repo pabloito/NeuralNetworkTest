@@ -76,13 +76,11 @@ classdef GenericMultiLayerPerceptron
           
           if(output != expected_output)
             #calculate Deltas
-            NN.deltaCalculation(expected_output, output);
+            NN = NN.deltaCalculation(expected_output, output);
             
-            disp("deltas")
-            NN.deltas
             
             #update weights
-            NN.incrementalWeightUpdate();
+            NN = NN.incrementalWeightUpdate();
           endif
           analized_rows = analized_rows + 1; 
         endfor
@@ -108,6 +106,8 @@ classdef GenericMultiLayerPerceptron
             
         NN.deltas(layer_index)=current_delta; 
         
+        NN.deltas
+        
         if layer_index>2
           current_weight(1)=[]; #saco el umbral
           
@@ -117,6 +117,8 @@ classdef GenericMultiLayerPerceptron
     endfunction
     
     function NN = calculate_layers(NN, row)
+      disp("weights")
+      NN.weights
       row = [NN.bias, row];
       NN.layers(1)=row;
       for current_layer = 1 : NN.hidden_layers + 1
@@ -127,7 +129,7 @@ classdef GenericMultiLayerPerceptron
          current_output =  zeros(1,size(current_weight)(1));
          
          for i=1:size(current_weight)(1)
-           val = dot(current_input, current_weight(i,:));
+           val = current_input* current_weight(i,:)';
           current_output(1,i) = NN.activation.apply(val);
          endfor
          
@@ -140,10 +142,14 @@ classdef GenericMultiLayerPerceptron
     endfunction
     
     function NN = incrementalWeightUpdate(NN)
-      for layer_index = 1 : NN.hiddenLayers + 1
-        current_layer = NN.layers(layer_index);
-        current_delta = NN.deltas(layer_index+1);
-        NN.weights(layer_index,:)= weights(layer_index,:) + NN.learning_factor *dot(current_layer,current_delta);
+      for weight_index = 1 : NN.hidden_layers + 1
+        current_layer = cell2mat(NN.layers(weight_index));
+        current_delta = cell2mat(NN.deltas(weight_index+1));
+        prueba = (current_layer'*current_delta')
+        
+        current_weight= (cell2mat(NN.weights(weight_index,1)))';
+        
+        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *prueba)';
       endfor
     endfunction
     
