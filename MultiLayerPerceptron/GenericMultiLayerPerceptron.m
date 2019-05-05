@@ -61,7 +61,7 @@ classdef GenericMultiLayerPerceptron
       #--------------------------------
       inputUnits 		 = NN.units_per_layer(1);
       
-      outputs = zeros(size(expected_outputs)(1));
+      outputs = zeros(size(expected_outputs));
       
       error=NN.max_error;
       analized_rows = 0;
@@ -82,9 +82,12 @@ classdef GenericMultiLayerPerceptron
             #update weights
             NN = NN.incrementalWeightUpdate();
           endif
-          analized_rows = analized_rows + 1; 
+          analized_rows = analized_rows + 1;
+         outputs(index,1)=output; 
         endfor
-        error=immse(outputs,expected_outputs);
+        expected_outputs
+        outputs
+        error=immse(expected_outputs,outputs);
       endwhile
       output = training_output(error,NN.weights,analized_rows); 
     endfunction
@@ -102,11 +105,9 @@ classdef GenericMultiLayerPerceptron
         
         current_delta = NN.activation.apply_der(current_layer*current_weight');
         
-        current_delta = current_error.*current_delta'
+        current_delta = current_error.*current_delta';
             
         NN.deltas(layer_index)=current_delta; 
-        
-        NN.deltas
         
         if layer_index>2
           current_weight(1)=[]; #saco el umbral
@@ -145,11 +146,11 @@ classdef GenericMultiLayerPerceptron
       for weight_index = 1 : NN.hidden_layers + 1
         current_layer = cell2mat(NN.layers(weight_index));
         current_delta = cell2mat(NN.deltas(weight_index+1));
-        prueba = (current_layer'*current_delta')
+        product = (current_layer'*current_delta');
         
         current_weight= (cell2mat(NN.weights(weight_index,1)))';
         
-        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *prueba)';
+        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *product)';
       endfor
     endfunction
     

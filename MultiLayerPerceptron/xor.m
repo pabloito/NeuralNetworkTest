@@ -1,4 +1,4 @@
-function weight_matrix = xor(N)
+function output = xor(N)
   switch N
     case 2
       input=[
