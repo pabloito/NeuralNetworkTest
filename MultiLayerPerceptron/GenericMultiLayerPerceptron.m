@@ -72,7 +72,7 @@ classdef GenericMultiLayerPerceptron
           NN = NN.calculate_layers(row);
 
           expected_output = expected_outputs(index);
-          output = cell2mat(NN.layers(NN.hidden_layers+2))
+          output = cell2mat(NN.layers(NN.hidden_layers+2));
           
           if(output != expected_output)
             #calculate Deltas
@@ -85,8 +85,6 @@ classdef GenericMultiLayerPerceptron
           analized_rows = analized_rows + 1;
          outputs(index,1)=output; 
         endfor
-        expected_outputs
-        outputs
         error=immse(expected_outputs,outputs);
       endwhile
       output = training_output(error,NN.weights,analized_rows); 
@@ -118,8 +116,6 @@ classdef GenericMultiLayerPerceptron
     endfunction
     
     function NN = calculate_layers(NN, row)
-      disp("weights")
-      NN.weights
       row = [NN.bias, row];
       NN.layers(1)=row;
       for current_layer = 1 : NN.hidden_layers + 1
