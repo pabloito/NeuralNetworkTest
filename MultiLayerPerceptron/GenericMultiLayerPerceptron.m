@@ -150,7 +150,7 @@ classdef GenericMultiLayerPerceptron
         
         current_weight= (cell2mat(NN.weights(weight_index,1)))';
         
-        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *product)';
+        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *product)' + momentum(NN, weight_index);
       endfor
     endfunction
     
