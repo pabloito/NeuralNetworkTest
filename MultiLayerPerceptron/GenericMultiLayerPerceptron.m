@@ -72,43 +72,45 @@ classdef GenericMultiLayerPerceptron
     endfunction
     
     function output = train_weights(NN, inputs, expected_outputs)
-      #------Randomize Entry Data------
-      perm = randperm(size(inputs, 1));
-      inputs = shuffle(inputs,perm);
-      expected_outputs = shuffle(expected_outputs,perm);
-      #--------------------------------
-      inputUnits 		 = rows(inputs);
-      
-      outputs = zeros(size(expected_outputs));
-      error=NN.max_error;
-      analized_rows = 0;
-      
-      while error>=NN.max_error
-        for index = 1 : inputUnits
-          input  = inputs(index, :);
-          NN = NN.calculate_layers(input);
-
-          expected_output = expected_outputs(index);
-          output = NN.activation.apply(NN.layers{NN.hidden_layers+2});
-          
-          if(output != expected_output)
-            #calculate Deltas
-            NN = NN.deltaCalculation(expected_output, output);
-            
-            #update weights
-            NN = NN.incrementalWeightUpdate();
-
-            if(NN.adaptive_learning==1)
-              NN = NN.updateETA(expected_output-output);
-            endif
-          endif
-          analized_rows = analized_rows + 1;
-         outputs(index,1)=output; 
-        endfor
-        error=immse(outputs,expected_outputs)
+      tic
+        #------Randomize Entry Data------
+        perm = randperm(size(inputs, 1));
+        inputs = shuffle(inputs,perm);
+        expected_outputs = shuffle(expected_outputs,perm);
+        #--------------------------------
+        inputUnits 		 = rows(inputs);
         
-      endwhile
-      output = training_output(error,NN.weights,analized_rows,outputs); 
+        outputs = zeros(size(expected_outputs));
+        error=NN.max_error;
+        analized_rows = 0;
+        
+        while error>=NN.max_error
+          for index = 1 : inputUnits
+            input  = inputs(index, :);
+            NN = NN.calculate_layers(input);
+
+            expected_output = expected_outputs(index);
+            output = NN.activation.apply(NN.layers{NN.hidden_layers+2});
+            
+            if(output != expected_output)
+              #calculate Deltas
+              NN = NN.deltaCalculation(expected_output, output);
+              
+              #update weights
+              NN = NN.incrementalWeightUpdate();
+
+              if(NN.adaptive_learning==1)
+                NN = NN.updateETA(expected_output-output);
+              endif
+            endif
+            analized_rows = analized_rows + 1;
+          outputs(index,1)=output; 
+          endfor
+          error=immse(outputs,expected_outputs)
+          
+        endwhile
+      t=toc
+      output = training_output(error,NN.weights,analized_rows,outputs,t); 
     endfunction
     
     function NN = deltaCalculation(NN,expected_output, output)
