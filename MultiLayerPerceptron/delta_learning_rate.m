@@ -24,7 +24,7 @@ classdef delta_learning_rate
         DLR.errors_size++;
         DLR.errors(DLR.errors_size) = delta_E;
       else
-        DLR.errors(end+1) = delta_E
+        DLR.errors(end+1) = delta_E;
         DLR.errors(1)=[];
       endif
 
