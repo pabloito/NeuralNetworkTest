@@ -134,8 +134,8 @@ classdef GenericMultiLayerPerceptron
               [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(elem);
               NN.learning_rate = NN.learning_rate + delta_n;
             endif
-          endif
-        end
+          endfor
+        endfor
       
       endfor
     endfunction
