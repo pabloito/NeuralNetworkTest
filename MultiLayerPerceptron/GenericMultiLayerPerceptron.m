@@ -49,8 +49,8 @@ classdef GenericMultiLayerPerceptron
     function NN = initialize_weights(NN)      
       if(size(NN.units_per_layer)(2) != NN.hidden_layers + 2)
         fprintf("Error expected hidden_layers = units_per_layer column size. Found hidden_layers='%d', units_per_layer column size ='%d'",
-          hidden_layers + 2,size(units_per_layer)(2));
-        exit(1);
+          NN.hidden_layers + 2,size(NN.units_per_layer)(2));
+          return
       endif
       switch NN.weight_init_method
         case 0 # standard
@@ -80,7 +80,6 @@ classdef GenericMultiLayerPerceptron
       inputUnits 		 = rows(inputs);
       
       outputs = zeros(size(expected_outputs));
-      
       error=NN.max_error;
       analized_rows = 0;
       
@@ -109,7 +108,7 @@ classdef GenericMultiLayerPerceptron
         error=immse(outputs,expected_outputs)
         
       endwhile
-      output = training_output(error,NN.weights,analized_rows); 
+      output = training_output(error,NN.weights,analized_rows,outputs); 
     endfunction
     
     function NN = deltaCalculation(NN,expected_output, output)
@@ -163,7 +162,7 @@ classdef GenericMultiLayerPerceptron
         current_weight = NN.weights{weight_index};
         weight_incremental = NN.learning_rate *  current_delta * NN.activation.apply(current_layer)';
         
-        NN.weights(weight_index)= current_weight + weight_incremental'; # + momentum(NN, weight_index);
+        NN.weights(weight_index)= current_weight + weight_incremental';# + momentum(NN, weight_index);
       endfor
     endfunction
     
