@@ -14,7 +14,21 @@ classdef GenericMultiLayerPerceptron
     delta_learning_rate;
     adaptive_learning;
   endproperties
-  methods 
+  methods
+    function NN = updateETA(NN, current_error)
+      if(NN.adaptive_learning==1)
+        for idx = 1:numel(current_error)
+          [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
+          NN.learning_rate = NN.learning_rate + delta_n;
+          if(NN.learning_rate>1)
+            NN.learning_rate=1;
+          elseif(NN.learning_rate<0)
+            NN.learning_rate=0;
+          endif
+        endfor
+      endif
+    endfunction
+
     function NN = GenericMultiLayerPerceptron()
      source("config.conf");
      NN.adaptive_learning = adaptive_learning();
@@ -84,6 +98,10 @@ classdef GenericMultiLayerPerceptron
             
             #update weights
             NN = NN.incrementalWeightUpdate();
+
+            if(NN.adaptive_learning==1)
+              NN = NN.updateETA(expected_output-output);
+            endif
           endif
           analized_rows = analized_rows + 1;
          outputs(index,1)=output; 
@@ -96,18 +114,6 @@ classdef GenericMultiLayerPerceptron
     
     function NN = deltaCalculation(NN,expected_output, output)
       current_error = expected_output-output;
-      if(NN.adaptive_learning==1)
-        for idx = 1:numel(current_error)
-          [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
-          NN.learning_rate = NN.learning_rate + delta_n;
-          if(NN.learning_rate>1)
-            NN.learning_rate=1;
-          elseif(NN.learning_rate<0)
-            NN.learning_rate=0;
-          endif
-        endfor
-      endif
-      
       
       for layer_index = NN.hidden_layers + 2 : -1 : 2
               
@@ -126,17 +132,6 @@ classdef GenericMultiLayerPerceptron
         NN.deltas(layer_index) = current_delta; 
   
         current_error = current_weight*current_delta;
-        if(NN.adaptive_learning==1)
-          for idx = 1:numel(current_error)
-            [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
-            NN.learning_rate = NN.learning_rate + delta_n;
-            if(NN.learning_rate>1)
-              NN.learning_rate=1;
-            elseif(NN.learning_rate<0)
-              NN.learning_rate=0;
-            endif
-          endfor
-        endif
       
       endfor
     endfunction
