@@ -109,8 +109,8 @@ classdef GenericMultiLayerPerceptron
           error=immse(outputs,expected_outputs)
           
         endwhile
-      t=toc
-      output = training_output(error,NN.weights,analized_rows,outputs,t); 
+      t=toc;
+      output = training_output(error,NN.weights,analized_rows,outputs,t,inputs); 
     endfunction
     
     function NN = deltaCalculation(NN,expected_output, output)
