@@ -3,7 +3,7 @@ classdef delta_learning_rate
     learning_rate_k;
     learning_rate_a;
     learning_rate_b;
-    learning_factor;
+    learning_rate;
 
     errors_size=0;
     errors;
@@ -14,7 +14,7 @@ classdef delta_learning_rate
       DLR.learning_rate_k = learning_rate_k;
       DLR.learning_rate_a = learning_rate_a;
       DLR.learning_rate_b = learning_rate_b;
-      DLR.learning_factor = learning_factor;
+      DLR.learning_rate = learning_rate;
       DLR.errors=zeros(1,learning_rate_k);
     endfunction
 
@@ -33,7 +33,7 @@ classdef delta_learning_rate
       elseif(DLR.last_k_are_negative())
         delta_n = DLR.learning_rate_a;
       else
-        delta_n = -1*DLR.learning_factor*DLR.learning_rate_b;
+        delta_n = -1*DLR.learning_rate*DLR.learning_rate_b;
       endif   
     endfunction
 

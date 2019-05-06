@@ -11,10 +11,14 @@ classdef GenericMultiLayerPerceptron
     learning_rate;
     max_error;
     activation;
+    delta_learning_rate;
+    adaptive_learning;
   endproperties
   methods 
     function NN = GenericMultiLayerPerceptron()
      source("config.conf");
+     NN.adaptive_learning = adaptive_learning();
+     NN.delta_learning_rate = delta_learning_rate();
      NN.hidden_layers = hidden_layers;
      NN.units_per_layer = units_per_layer;
      NN.weight_init_method = weight_init_method;
@@ -97,6 +101,12 @@ classdef GenericMultiLayerPerceptron
     function NN = deltaCalculation(NN,expected_output, output)
 
       current_error = expected_output-output;
+      for elem = current_error
+        if(NN.adaptive_learning==1)
+          [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(elem);
+           NN.learning_rate = NN.learning_rate + delta_n;
+        endif
+      end
       
       for layer_index = NN.hidden_layers + 2 : -1 : 2
         
@@ -115,6 +125,13 @@ classdef GenericMultiLayerPerceptron
         NN.deltas(layer_index) = current_delta; 
   
         current_error = current_weight.*current_delta';
+
+        for elem = current_error
+          if(NN.adaptive_learning==1)
+            [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(elem);
+             NN.learning_rate = NN.learning_rate + delta_n;
+          endif
+        end
       
       endfor
     endfunction
