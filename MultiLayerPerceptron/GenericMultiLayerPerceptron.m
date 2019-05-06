@@ -8,7 +8,7 @@ classdef GenericMultiLayerPerceptron
     hidden_layers;
     units_per_layer;
     weight_init_method;
-    learning_factor;
+    learning_rate;
     max_error;
     activation;
   endproperties
@@ -18,7 +18,7 @@ classdef GenericMultiLayerPerceptron
      NN.hidden_layers = hidden_layers;
      NN.units_per_layer = units_per_layer;
      NN.weight_init_method = weight_init_method;
-     NN.learning_factor = learning_factor;
+     NN.learning_rate = learning_rate;
      NN.max_error = max_error;
      disp(function_type);
      NN.activation = activation_function(function_type);
@@ -45,7 +45,7 @@ classdef GenericMultiLayerPerceptron
     endfunction
 
     function NN = initialize_layer_structure(NN)
-      NN.deltas = cell(NN.hidden_layers + 1, 1);
+      NN.deltas = cell(NN.hidden_layers + 2, 1);
     endfunction
 
     function NN = initialize_multi_layer_perceptron(NN)
@@ -59,7 +59,7 @@ classdef GenericMultiLayerPerceptron
       inputs = shuffle(inputs,perm);
       expected_outputs = shuffle(expected_outputs,perm);
       #--------------------------------
-      inputUnits 		 = size(inputs)(1);
+      inputUnits 		 = rows(inputs);
       
       outputs = zeros(size(expected_outputs));
       
@@ -68,16 +68,15 @@ classdef GenericMultiLayerPerceptron
       
       while error>=NN.max_error
         for index = 1 : inputUnits
-          row  = inputs(index, :);
-          NN = NN.calculate_layers(row);
+          input  = inputs(index, :);
+          NN = NN.calculate_layers(input);
 
           expected_output = expected_outputs(index);
-          output = cell2mat(NN.layers(NN.hidden_layers+2));
+          output = NN.activation.apply(NN.layers{NN.hidden_layers+2});
           
           if(output != expected_output)
             #calculate Deltas
             NN = NN.deltaCalculation(expected_output, output);
-            
             
             #update weights
             NN = NN.incrementalWeightUpdate();
@@ -86,12 +85,12 @@ classdef GenericMultiLayerPerceptron
          outputs(index,1)=output; 
         endfor
         error=immse(expected_outputs,outputs)
-        outputs
-        NN.weights
+        if (isnan(error))
+          dbstop 71
+        endif
+ 
       endwhile
-      error
-      NN.weights
-      analized_rows
+    
       output = training_output(error,NN.weights,analized_rows); 
     endfunction
     
@@ -99,44 +98,39 @@ classdef GenericMultiLayerPerceptron
 
       current_error = expected_output-output;
       
-      for i=1:size(NN.layers)(1) -1
-        layer_index = size(NN.layers)(1)-i+1;
+      for layer_index = NN.hidden_layers + 2 : -1 : 2
         
-        current_layer = cell2mat(NN.layers(layer_index-1));
+        current_layer = NN.layers{layer_index};
         
-        current_weight = cell2mat(NN.weights(layer_index-1,1));
+        current_weight = NN.weights{layer_index-1};
         
-        current_delta = NN.activation.apply_der(current_layer*current_weight');
+        current_delta = NN.activation.apply_der(current_layer).*current_error;
         
-        current_delta = current_error.*current_delta';
-            
-        NN.deltas(layer_index)=current_delta; 
-        
-        if layer_index>2
-          current_weight(1)=[]; #saco el umbral
+        if layer_index != NN.hidden_layers + 2 
           
-          current_error=current_delta*(current_weight');
-        endif
+          current_delta(1) = [];
+          
+        endif 
+  
+        NN.deltas(layer_index) = current_delta; 
+  
+        current_error = current_weight.*current_delta';
+      
       endfor
     endfunction
     
     function NN = calculate_layers(NN, row)
-      row = [NN.bias, row];
+      row = [NN.bias; row'];
       NN.layers(1)=row;
       for current_layer = 1 : NN.hidden_layers + 1
-         current_input = cell2mat(NN.layers(current_layer));
+         current_input = NN.layers{current_layer};
          
-         current_weight = cell2mat(NN.weights(current_layer,:));
+         current_weight = NN.weights{current_layer};
          
-         current_output =  zeros(1,size(current_weight)(1));
-         
-         for i=1:size(current_weight)(1)
-           val = current_input* current_weight(i,:)';
-          current_output(1,i) = NN.activation.apply(val);
-         endfor
+         current_output = current_weight'*NN.activation.apply(current_input);
          
          if(current_layer!=NN.hidden_layers +1)
-          current_output = [NN.bias, current_output];
+          current_output = [NN.bias; current_output];
          endif
          
          NN.layers(current_layer+1)=current_output;
@@ -145,13 +139,13 @@ classdef GenericMultiLayerPerceptron
     
     function NN = incrementalWeightUpdate(NN)
       for weight_index = 1 : NN.hidden_layers + 1
-        current_layer = cell2mat(NN.layers(weight_index));
-        current_delta = cell2mat(NN.deltas(weight_index+1));
-        product = (current_layer'*current_delta');
+        current_layer = NN.layers{weight_index};
+        current_delta = NN.deltas{weight_index+1};
+        current_weight = NN.weights{weight_index};
         
-        current_weight= (cell2mat(NN.weights(weight_index,1)))';
+        weight_incremental = NN.learning_rate * NN.activation.apply(current_layer) * current_delta';
         
-        NN.weights(weight_index,1)= current_weight' + (NN.learning_factor *product)';# + momentum(NN, weight_index);
+        NN.weights(weight_index)= current_weight + weight_incremental;# + momentum(NN, weight_index);
       endfor
     endfunction
     
@@ -167,8 +161,8 @@ classdef GenericMultiLayerPerceptron
       disp(NN.units_per_layer);
       disp("weight_init_method");
       disp(NN.weight_init_method);
-      disp("learning_factor");
-      disp(NN.learning_factor);
+      disp("learning_rate");
+      disp(NN.learning_rate);
       disp("activation function");
       NN.activation.print_function(NN.activation);
       disp("max_error");
