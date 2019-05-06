@@ -105,6 +105,12 @@ classdef GenericMultiLayerPerceptron
         for idx = 1:numel(current_error)
           [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
           NN.learning_rate = NN.learning_rate + delta_n;
+          if(NN.learning_rate>1)
+            NN.learning_rate=1;
+          elseif(NN.learning_rate<0)
+            NN.learning_rate=0;
+          endif
+          display(NN.learning_rate);
         endfor
       endif
       
@@ -129,6 +135,12 @@ classdef GenericMultiLayerPerceptron
           for idx = 1:numel(current_error)
             [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
             NN.learning_rate = NN.learning_rate + delta_n;
+            if(NN.learning_rate>1)
+              NN.learning_rate=1;
+            elseif(NN.learning_rate<0)
+              NN.learning_rate=0;
+            endif
+            display(NN.learning_rate);
           endfor
         endif
       
