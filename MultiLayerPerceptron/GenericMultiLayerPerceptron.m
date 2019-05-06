@@ -39,7 +39,7 @@ classdef GenericMultiLayerPerceptron
           NN.weights = cell(NN.hidden_layers+1,1);
           
           for layer = 1 : NN.hidden_layers + 1
-            NN.weights(layer) = rand(NN.units_per_layer(layer + 1), NN.units_per_layer(layer) + 1);        
+            NN.weights(layer) = rand(NN.units_per_layer(layer) + 1, NN.units_per_layer(layer + 1));        
           endfor
       endswitch
     endfunction
