@@ -15,5 +15,12 @@ S = terrain(1:end, 3);
   
 NN = GenericMultiLayerPerceptron();
 output = NN.train_weights(E,S);
-  
+
+# Grafico terreno correcto
+plot3(E(:,1), E(:,2), S, ".");
+title ("Terrain");
+
+# calculated_output = calcular S con outputs.weights para plotear
+# plot3(E(:,1), E(:,2), calculated_output);  
+title ("Neural network's interpretation");
 endfunction
