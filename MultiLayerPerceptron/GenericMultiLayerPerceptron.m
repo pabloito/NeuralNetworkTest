@@ -88,18 +88,13 @@ classdef GenericMultiLayerPerceptron
           analized_rows = analized_rows + 1;
          outputs(index,1)=output; 
         endfor
-        error=immse(expected_outputs,outputs)
-        if (isnan(error))
-          dbstop 71
-        endif
- 
+        error=immse(outputs,expected_outputs)
+        
       endwhile
-    
       output = training_output(error,NN.weights,analized_rows); 
     endfunction
     
     function NN = deltaCalculation(NN,expected_output, output)
-
       current_error = expected_output-output;
       if(NN.adaptive_learning==1)
         for idx = 1:numel(current_error)
@@ -113,8 +108,9 @@ classdef GenericMultiLayerPerceptron
         endfor
       endif
       
+      
       for layer_index = NN.hidden_layers + 2 : -1 : 2
-        
+              
         current_layer = NN.layers{layer_index};
         
         current_weight = NN.weights{layer_index-1};
@@ -129,7 +125,7 @@ classdef GenericMultiLayerPerceptron
   
         NN.deltas(layer_index) = current_delta; 
   
-        current_error = current_weight.*current_delta';
+        current_error = current_weight*current_delta;
         if(NN.adaptive_learning==1)
           for idx = 1:numel(current_error)
             [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
@@ -150,15 +146,17 @@ classdef GenericMultiLayerPerceptron
       NN.layers(1)=row;
       for current_layer = 1 : NN.hidden_layers + 1
          current_input = NN.layers{current_layer};
-         
          current_weight = NN.weights{current_layer};
-         
-         current_output = current_weight'*NN.activation.apply(current_input);
+         current_output = 0;
+         if current_layer == 1
+           current_output = current_weight'*current_input;
+         else
+           current_output = current_weight'*NN.activation.apply(current_input);
+         endif
          
          if(current_layer!=NN.hidden_layers +1)
           current_output = [NN.bias; current_output];
          endif
-         
          NN.layers(current_layer+1)=current_output;
       endfor
     endfunction
@@ -168,10 +166,9 @@ classdef GenericMultiLayerPerceptron
         current_layer = NN.layers{weight_index};
         current_delta = NN.deltas{weight_index+1};
         current_weight = NN.weights{weight_index};
+        weight_incremental = NN.learning_rate *  current_delta * NN.activation.apply(current_layer)';
         
-        weight_incremental = NN.learning_rate * NN.activation.apply(current_layer) * current_delta';
-        
-        NN.weights(weight_index)= current_weight + weight_incremental;# + momentum(NN, weight_index);
+        NN.weights(weight_index)= current_weight + weight_incremental'; # + momentum(NN, weight_index);
       endfor
     endfunction
     
