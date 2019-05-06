@@ -120,8 +120,6 @@ classdef GenericMultiLayerPerceptron
               
         current_layer = NN.layers{layer_index};
         
-        current_weight = NN.weights{layer_index-1};
-        
         current_delta = NN.activation.apply_der(current_layer).*current_error;
         
         if layer_index != NN.hidden_layers + 2 
@@ -131,9 +129,11 @@ classdef GenericMultiLayerPerceptron
         endif 
   
         NN.deltas(layer_index) = current_delta; 
-  
-        current_error = current_weight*current_delta;
-      
+        
+        if layer_index != 2    
+          current_weight = NN.weights{layer_index-1};
+          current_error = current_weight*current_delta';
+        endif        
       endfor
     endfunction
     
