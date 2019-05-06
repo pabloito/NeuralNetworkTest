@@ -101,14 +101,12 @@ classdef GenericMultiLayerPerceptron
     function NN = deltaCalculation(NN,expected_output, output)
 
       current_error = expected_output-output;
-      for elem = current_error
-        for elem2 = elem
-          if(NN.adaptive_learning==1)
-            [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(elem);
-            NN.learning_rate = NN.learning_rate + delta_n;
-          endif
+      if(NN.adaptive_learning==1)
+        for idx = 1:numel(current_error)
+          [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
+          NN.learning_rate = NN.learning_rate + delta_n;
         endfor
-      endfor
+      endif
       
       for layer_index = NN.hidden_layers + 2 : -1 : 2
         
@@ -127,15 +125,12 @@ classdef GenericMultiLayerPerceptron
         NN.deltas(layer_index) = current_delta; 
   
         current_error = current_weight.*current_delta';
-
-        for elem = current_error
-          for elem2 = elem
-            if(NN.adaptive_learning==1)
-              [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(elem);
-              NN.learning_rate = NN.learning_rate + delta_n;
-            endif
+        if(NN.adaptive_learning==1)
+          for idx = 1:numel(current_error)
+            [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
+            NN.learning_rate = NN.learning_rate + delta_n;
           endfor
-        endfor
+        endif
       
       endfor
     endfunction
