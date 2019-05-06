@@ -110,7 +110,6 @@ classdef GenericMultiLayerPerceptron
           elseif(NN.learning_rate<0)
             NN.learning_rate=0;
           endif
-          display(NN.learning_rate);
         endfor
       endif
       
@@ -140,7 +139,6 @@ classdef GenericMultiLayerPerceptron
             elseif(NN.learning_rate<0)
               NN.learning_rate=0;
             endif
-            display(NN.learning_rate);
           endfor
         endif
       
