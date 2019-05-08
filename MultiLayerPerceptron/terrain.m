@@ -15,8 +15,8 @@ function output = terrain(N)
   E = terrain(1:end, 1:2);
   S = terrain(1:end, 3);
 
-  E = normalize(E,-1.7,1.7);
-  S = normalize(S,-0.9354,0.9354);
+  E = min_max_normalize(E,-1.7,1.7);
+  S = min_max_normalize(S,tanh(-1.7),tanh(1.7));
 
   [E,S] = remove_random(1-sample_percentage, E, S);
     
