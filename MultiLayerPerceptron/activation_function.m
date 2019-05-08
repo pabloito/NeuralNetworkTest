@@ -8,7 +8,7 @@ classdef activation_function
     endfunction
 
     function ret = apply(AF, x)
-      switch(fun_type)
+      switch(AF.fun_type)
         case 0
           ret = AF.linear(x);
         case 1
@@ -19,7 +19,7 @@ classdef activation_function
     endfunction
     
     function ret = apply_der(AF, x)
-      switch(fun_type)
+      switch(AF.fun_type)
         case 0
           ret = AF.linear_der(x);
         case 1
