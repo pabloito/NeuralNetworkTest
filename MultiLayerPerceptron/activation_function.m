@@ -10,7 +10,7 @@ classdef activation_function
     function ret = apply(AF, x)
       switch(fun_type)
         case 0
-          ret = AF.step(x);
+          ret = AF.linear(x);
         case 1
           ret = AF.expo(x);
         case 2  
@@ -21,7 +21,7 @@ classdef activation_function
     function ret = apply_der(AF, x)
       switch(fun_type)
         case 0
-          ret = AF.step_der(x);
+          ret = AF.linear_der(x);
         case 1
           ret = AF.expo_der(x);
         case 2  
@@ -36,24 +36,24 @@ classdef activation_function
       disp("----Object of type Activation_Function-----");
     endfunction
 
-    function ret = step(AF, x)
-		  ret = sign(x);
+    function ret = linear(AF, x)
+		  ret = x;
     endfunction
 
     function ret = expo(AF, x)
-		  ret = 0; #TODO
+		  ret = 1.0 ./ (1.0 + exp(-2 * x));
     endfunction
 
     function ret = sigmoid(AF, x)
 		  ret = tanh(x);
     endfunction
 
-    function ret = step_der(AF, x);
-  		ret = 0;
+    function ret = linear_der(AF, x);
+  		ret = 1; # constante
     endfunction
 
     function ret = expo_der(AF, x);
-  		ret = 0; #TODO
+  		ret = 2 * x .* (1-x);
     endfunction
 
     function ret = sigmoid_der(AF, x);
