@@ -106,8 +106,8 @@ classdef GenericMultiLayerPerceptron
         error=NN.max_error;
         analized_rows = 0;
 
-        figure
-        hold on
+        figure(1);
+        title("Error evolution");
         
         while error>=NN.max_error
           for index = 1 : inputUnits
@@ -133,8 +133,10 @@ classdef GenericMultiLayerPerceptron
         endfor
 
         error = mean((outputs-expected_outputs).^2);
-        plot(analized_rows, error, '.')
-          
+        plot(analized_rows, error, '.', "markersize", 15, "color", "r");
+        pause(0.01)
+        hold on
+                 
         endwhile
       t=toc
       output = training_output(error,NN.weights,analized_rows,outputs,t,inputs); 
