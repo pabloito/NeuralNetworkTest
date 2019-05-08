@@ -3,42 +3,58 @@ classdef GenericMultiLayerPerceptron
     weights;
     deltas;
     layers;
-    
+    previous_weight_incremental;
     bias;
     hidden_layers;
     units_per_layer;
     weight_init_method;
     learning_rate;
+    learning_rate_k;
+    learning_rate_a;
+    learning_rate_b;
     max_error;
-    activation;
-    delta_learning_rate;
+    activation;    
     adaptive_learning;
+    momentum_alpha;
   endproperties
   methods
     function NN = updateETA(NN, current_error)
-      if(NN.adaptive_learning==1)
-        for idx = 1:numel(current_error)
-          [NN.delta_learning_rate, delta_n] = NN.delta_learning_rate.calculate_learning_rate(current_error(idx));
-          NN.learning_rate = NN.learning_rate + delta_n;
-          if(NN.learning_rate>1)
-            NN.learning_rate=1;
-          elseif(NN.learning_rate<0)
-            NN.learning_rate=0;
-          endif
-        endfor
-      endif
+      persistent previous_errors = [];
+      persistent previous_errors_diff = [0];
+      persistent k = 0;
+      if(k<NN.learning_rate_k)
+        previous_errors = [previous_errors current_error];
+        if(k <NN.learning_rate_k -1)
+          previous_errors_diff = [previous_errors_diff current_error];
+        endif
+        k++;
+      else
+        k = 0;
+        sumvector = previous_errors-previous_errors_diff;
+        sumvector = sign(sumvector);
+        sum = sum(sumvector);
+        if(sum>0)
+          NN.learning_rate = NN.learning_rate * (1-NN.learning_rate_b);          
+         elseif(sum<0)
+          NN.learning_rate = NN.learning_rate + NN.learning_rate_a;          
+        endif
+        previous_errors = [];
+        previous_errors_diff = [0];
+      endif       
     endfunction
 
     function NN = GenericMultiLayerPerceptron()
      source("config.conf");
      NN.adaptive_learning = adaptive_learning();
-     NN.delta_learning_rate = delta_learning_rate();
      NN.hidden_layers = hidden_layers;
      NN.units_per_layer = units_per_layer;
      NN.weight_init_method = weight_init_method;
      NN.learning_rate = learning_rate;
+     NN.learning_rate_k = learning_rate_k;
+     NN.learning_rate_a = learning_rate_a;
+     NN.learning_rate_b = learning_rate_b;
+     NN.momentum_alpha = momentum_alpha;
      NN.max_error = max_error;
-     disp(function_type);
      NN.activation = activation_function(function_type);
      NN.bias=-1;
     
@@ -55,7 +71,7 @@ classdef GenericMultiLayerPerceptron
       switch NN.weight_init_method
         case 0 # standard
           NN.weights = cell(NN.hidden_layers+1,1);
-          
+          NN.previous_weight_incremental = cell(NN.hidden_layers+1,1);
           for layer = 1 : NN.hidden_layers + 1
             NN.weights(layer) = rand(NN.units_per_layer(layer) + 1, NN.units_per_layer(layer + 1));        
           endfor
@@ -106,13 +122,10 @@ classdef GenericMultiLayerPerceptron
             analized_rows = analized_rows + 1;
           outputs(index,1)=output; 
         endfor
-        if mod(analized_rows,100)== 0
-          analized_rows
-          endif
          error=mean((outputs-expected_outputs).^2)
           
         endwhile
-      t=toc;
+      t=toc
       output = training_output(error,NN.weights,analized_rows,outputs,t,inputs); 
     endfunction
     
@@ -162,15 +175,19 @@ classdef GenericMultiLayerPerceptron
     endfunction
     
     function NN = incrementalWeightUpdate(NN)
-      for weight_index = 1 : NN.hidden_layers + 1
+     for weight_index = 1 : NN.hidden_layers + 1
         
         current_layer = NN.layers{weight_index};
         current_delta = NN.deltas{weight_index+1};
         current_weight = NN.weights{weight_index};
         
-        weight_incremental = NN.learning_rate *  current_delta * current_layer';
-        
-        NN.weights(weight_index)= current_weight + weight_incremental';# + momentum(NN, weight_index);
+        if(!isempty(NN.previous_weight_incremental{weight_index}))
+          weight_incremental = (NN.learning_rate *  current_delta * current_layer') + NN.momentum_alpha*NN.previous_weight_incremental{weight_index};
+        else
+          weight_incremental = (NN.learning_rate *  current_delta * current_layer');
+        endif
+        NN.previous_weight_incremental(weight_index) = weight_incremental;        
+        NN.weights(weight_index)= current_weight + weight_incremental';
       endfor
     endfunction
     
