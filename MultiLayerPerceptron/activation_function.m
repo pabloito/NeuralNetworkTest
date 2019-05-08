@@ -27,7 +27,7 @@ classdef activation_function
     endfunction
 
     function ret = sigmoid_der(AF, x);
-  		ret = (1 - tanh(x).**2); #tanh derivative
+  		ret = (1 - x.**2); #tanh derivative
     endfunction
   endmethods      
 endclassdef

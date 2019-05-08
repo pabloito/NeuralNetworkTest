@@ -90,7 +90,7 @@ classdef GenericMultiLayerPerceptron
             NN = NN.calculate_layers(input);
 
             expected_output = expected_outputs(index);
-            output = NN.activation.apply(NN.layers{NN.hidden_layers+2});
+            output = NN.layers{NN.hidden_layers+2};
             
             if(output != expected_output)
               #calculate Deltas
@@ -105,8 +105,11 @@ classdef GenericMultiLayerPerceptron
             endif
             analized_rows = analized_rows + 1;
           outputs(index,1)=output; 
-          endfor
-          error=immse(outputs,expected_outputs)
+        endfor
+        if mod(analized_rows,100)== 0
+          analized_rows
+          endif
+         error=mean((outputs-expected_outputs).^2)
           
         endwhile
       t=toc;
@@ -114,8 +117,9 @@ classdef GenericMultiLayerPerceptron
     endfunction
     
     function NN = deltaCalculation(NN,expected_output, output)
+      #Error for last (output) layer 
       current_error = expected_output-output;
-      
+      #Decreasing loop (from last layer to first layer)
       for layer_index = NN.hidden_layers + 2 : -1 : 2
               
         current_layer = NN.layers{layer_index};
@@ -123,16 +127,16 @@ classdef GenericMultiLayerPerceptron
         current_delta = NN.activation.apply_der(current_layer).*current_error;
         
         if layer_index != NN.hidden_layers + 2 
-          
+          #Remove bias
           current_delta(1) = [];
           
         endif 
   
         NN.deltas(layer_index) = current_delta; 
-        
+        #Dont calculate for layer_index=2 as input layer doesnt have deltas
         if layer_index != 2    
           current_weight = NN.weights{layer_index-1};
-          current_error = current_weight*current_delta';
+          current_error = current_weight*current_delta;
         endif        
       endfor
     endfunction
@@ -141,28 +145,30 @@ classdef GenericMultiLayerPerceptron
       row = [NN.bias; row'];
       NN.layers(1)=row;
       for current_layer = 1 : NN.hidden_layers + 1
+       
          current_input = NN.layers{current_layer};
          current_weight = NN.weights{current_layer};
          current_output = 0;
-         if current_layer == 1
-           current_output = current_weight'*current_input;
-         else
-           current_output = current_weight'*NN.activation.apply(current_input);
-         endif
          
+         current_output = current_weight'*current_input;
+ 
+         #Don't add bias if layer is last layer 
          if(current_layer!=NN.hidden_layers +1)
           current_output = [NN.bias; current_output];
          endif
-         NN.layers(current_layer+1)=current_output;
+         #Add output to structure
+         NN.layers(current_layer+1)= NN.activation.apply(current_output);
       endfor
     endfunction
     
     function NN = incrementalWeightUpdate(NN)
       for weight_index = 1 : NN.hidden_layers + 1
+        
         current_layer = NN.layers{weight_index};
         current_delta = NN.deltas{weight_index+1};
         current_weight = NN.weights{weight_index};
-        weight_incremental = NN.learning_rate *  current_delta * NN.activation.apply(current_layer)';
+        
+        weight_incremental = NN.learning_rate *  current_delta * current_layer';
         
         NN.weights(weight_index)= current_weight + weight_incremental';# + momentum(NN, weight_index);
       endfor
