@@ -68,14 +68,20 @@ classdef GenericMultiLayerPerceptron
           NN.hidden_layers + 2,size(NN.units_per_layer)(2));
           return
       endif
-      switch NN.weight_init_method
-        case 0 # standard
-          NN.weights = cell(NN.hidden_layers+1,1);
-          NN.previous_weight_incremental = cell(NN.hidden_layers+1,1);
-          for layer = 1 : NN.hidden_layers + 1
-            NN.weights(layer) = rand(NN.units_per_layer(layer) + 1, NN.units_per_layer(layer + 1));        
-          endfor
-      endswitch
+
+      NN.weights = cell(NN.hidden_layers+1,1);
+      NN.previous_weight_incremental = cell(NN.hidden_layers+1,1);
+      
+      for layer = 1 : NN.hidden_layers + 1
+        switch NN.weight_init_method
+          case 0 # random    
+            NN.weights(layer) = rand(NN.units_per_layer(layer) + 1, NN.units_per_layer(layer + 1));
+          case 1 # he-et-al
+            high = 2/sqrt(NN.units_per_layer(layer));
+            low = high/4;
+            NN.weights(layer) = rand(NN.units_per_layer(layer) + 1, NN.units_per_layer(layer+1)) * (high - low) + low;
+        endswitch  
+      endfor    
     endfunction
 
     function NN = initialize_layer_structure(NN)
