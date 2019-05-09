@@ -1,5 +1,6 @@
 classdef GenericMultiLayerPerceptron
   properties
+    #Training Matrixes
     weights;
     deltas;
     layers;
@@ -20,6 +21,8 @@ classdef GenericMultiLayerPerceptron
     current_error;
     analyzed_rows;
     current_outputs;
+    training_output;
+    batch_quantity;
   endproperties
   methods
     function NN = updateETA(NN, current_error)
@@ -63,6 +66,7 @@ classdef GenericMultiLayerPerceptron
      NN.bias=-1;
      NN.training_method = training_method;
      NN.analyzed_rows=0;
+     NN.batch_quantity=batch_quantity;
     
      NN.layers = cell(NN.hidden_layers+2,1);
      NN = initialize_multi_layer_perceptron(NN);
@@ -99,7 +103,7 @@ classdef GenericMultiLayerPerceptron
       NN = initialize_layer_structure(NN);
     endfunction
     
-    function output = train_weights(NN, inputs, expected_outputs)
+    function NN = train_weights(NN, inputs, expected_outputs)
       tic
         #------Randomize Entry Data------
         perm = randperm(size(inputs, 1));
@@ -116,16 +120,18 @@ classdef GenericMultiLayerPerceptron
           switch NN.training_method
             case 0
               NN = NN.incremental_training(inputs, expected_outputs);
+              plot(NN.analyzed_rows, NN.current_error, '.', "markersize", 15, "color", "r");
+              pause(0.01)
+              hold on          
             case 1
-              NN = NN.batch_training();
-          endswitch                 
+              NN = NN.batch_training(inputs, expected_outputs);
+          endswitch
         endwhile
       t=toc
-      output = training_output(NN.current_error,NN.weights,NN.analyzed_rows,NN.current_outputs,t,inputs); 
+      NN.training_output = training_output(NN.current_error,NN.weights,NN.analyzed_rows,NN.current_outputs,t,inputs); 
     endfunction
     
-    function NN = incremental_training(NN, inputs, expected_outputs)
-      
+    function NN = incremental_training(NN, inputs, expected_outputs)      
         inputUnits 		 = rows(inputs);
         outputs = zeros(size(expected_outputs));
         
@@ -138,7 +144,7 @@ classdef GenericMultiLayerPerceptron
             
             if(output != expected_output)
               #calculate Deltas
-              NN = NN.deltaCalculation(expected_output, output);
+              NN = NN.deltaCalculation(expected_output-output);
               
               #update weights
               NN = NN.incrementalWeightUpdate();
@@ -150,22 +156,67 @@ classdef GenericMultiLayerPerceptron
             NN.analyzed_rows = NN.analyzed_rows + 1;
           outputs(index,1)=output; 
         endfor
-
+        
         NN.current_outputs = outputs;
         NN.current_error = mean((outputs-expected_outputs).^2);
-        plot(NN.analyzed_rows, NN.current_error, '.', "markersize", 15, "color", "r");
-        pause(0.01)
-        hold on
     endfunction
     
     function NN = batch_training(NN, inputs, expected_outputs)
         inputUnits 		 = rows(inputs);
-        outputs = zeros(size(expected_outputs));
+        if(inputUnits<NN.batch_quantity)
+          fprintf("ERROR: Batch Quantity: %d, cannot be larger than amount of patters: %d",NN.batch_quantity, inputUnits);
+          return;
+        endif
+        
+        remainder = mod(inputUnits, NN.batch_quantity);
+        if remainder > 0
+          inputs = [inputs; inputs(1:remainder,:)];
+          expected_outputs = [expected_outputs; expected_outputs(1:remainder,:)];
+        endif
+        inputUnits 		 = rows(inputs);
+        
+        batchs = inputUnits/NN.batch_quantity;
+        for i = 1:batchs
+          counter = i-1;
+          input_batch = inputs(1 +counter * NN.batch_quantity,:);
+          expected_output_batch = expected_outputs(1 +counter * NN.batch_quantity,:);
+          NN = NN.train_batch(input_batch,expected_output_batch);
+        endfor
+        
+        plot(NN.analyzed_rows, NN.current_error, '.', "markersize", 15, "color", "r");
+        pause(0.01)
+        hold on
     endfunction
-    
-    function NN = deltaCalculation(NN,expected_output, output)
-      #Error for last (output) layer 
-      current_error = expected_output-output;
+  
+    function NN = train_batch(NN, input_batch, expected_output_batch)
+        inputUnits 		 = rows(input_batch);
+        acum_error = 0;
+        for index = 1 : inputUnits
+            disp("a");
+            input  = input_batch(index, :);
+            NN = NN.calculate_layers(input);
+
+            expected_output = expected_output_batch(index);
+            output = NN.layers{NN.hidden_layers+2};
+            
+            acum_error= acum_error + expected_output-output;
+            NN.analyzed_rows = NN.analyzed_rows + 1;
+            outputs(index,1)=output; 
+        endfor        
+        #calculate Deltas
+        NN = NN.deltaCalculation(acum_error/inputUnits);
+        
+        #update weights
+        NN = NN.incrementalWeightUpdate();
+
+        if(NN.adaptive_learning==1)
+          NN = NN.updateETA(expected_output-output);
+        endif
+        NN.current_error = mean((expected_output_batch-outputs).^2);
+        NN.current_outputs = outputs;
+    endfunction
+  
+    function NN = deltaCalculation(NN,current_error)
       #Decreasing loop (from last layer to first layer)
       for layer_index = NN.hidden_layers + 2 : -1 : 2
               

@@ -5,6 +5,14 @@ function output = xor(N)
             0,0;
             0,1;
             1,0;
+            1,1;
+            0,0;
+            0,1;
+            1,0;
+            1,1;
+            0,0;
+            0,1;
+            1,0;
             1,1
             ];
       expected_output=[
@@ -12,6 +20,14 @@ function output = xor(N)
             1;
             1;
             0;
+            0;
+            1;
+            1;
+            0;
+            0;
+            1;
+            1;
+            0
             ];      
     otherwise
     fprintf("Expected N=2, found N='%d'\n",N);
