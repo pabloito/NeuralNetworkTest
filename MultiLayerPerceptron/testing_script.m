@@ -8,5 +8,5 @@ function testing_script(filename, iterations)
 
     avg = mean(time);
 
-    fprintf(file, avg);
+    fprintf(file, num2str(avg));
 endfunction
