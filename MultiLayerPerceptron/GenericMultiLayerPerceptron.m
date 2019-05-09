@@ -19,6 +19,7 @@ classdef GenericMultiLayerPerceptron
     training_method;
     current_error;
     analyzed_rows;
+    current_outputs;
   endproperties
   methods
     function NN = updateETA(NN, current_error)
@@ -106,12 +107,12 @@ classdef GenericMultiLayerPerceptron
         expected_outputs = shuffle(expected_outputs,perm);
         #--------------------------------
 
-        error=NN.max_error;
+        NN.current_error=NN.max_error;
 
         figure(1);
         title("Error evolution");
         
-        while error>=NN.max_error
+        while NN.current_error>=NN.max_error
           switch NN.training_method
             case 0
               NN = NN.incremental_training(inputs, expected_outputs);
@@ -120,7 +121,7 @@ classdef GenericMultiLayerPerceptron
           endswitch                 
         endwhile
       t=toc
-      output = training_output(NN.current_error,NN.weights,NN.analyzed_rows,outputs,t,inputs); 
+      output = training_output(NN.current_error,NN.weights,NN.analyzed_rows,NN.current_outputs,t,inputs); 
     endfunction
     
     function NN = incremental_training(NN, inputs, expected_outputs)
@@ -150,6 +151,7 @@ classdef GenericMultiLayerPerceptron
           outputs(index,1)=output; 
         endfor
 
+        NN.current_outputs = outputs;
         NN.current_error = mean((outputs-expected_outputs).^2);
         plot(NN.analyzed_rows, NN.current_error, '.', "markersize", 15, "color", "r");
         pause(0.01)
