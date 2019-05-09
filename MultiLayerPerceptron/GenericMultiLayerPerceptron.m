@@ -16,6 +16,9 @@ classdef GenericMultiLayerPerceptron
     activation;    
     adaptive_learning;
     momentum_alpha;
+    training_method;
+    current_error;
+    analyzed_rows;
   endproperties
   methods
     function NN = updateETA(NN, current_error)
@@ -57,6 +60,8 @@ classdef GenericMultiLayerPerceptron
      NN.max_error = max_error;
      NN.activation = activation_function(function_type);
      NN.bias=-1;
+     NN.training_method = training_method;
+     NN.analyzed_rows=0;
     
      NN.layers = cell(NN.hidden_layers+2,1);
      NN = initialize_multi_layer_perceptron(NN);
@@ -100,17 +105,30 @@ classdef GenericMultiLayerPerceptron
         inputs = shuffle(inputs,perm);
         expected_outputs = shuffle(expected_outputs,perm);
         #--------------------------------
-        inputUnits 		 = rows(inputs);
-        
-        outputs = zeros(size(expected_outputs));
+
         error=NN.max_error;
-        analized_rows = 0;
 
         figure(1);
         title("Error evolution");
         
         while error>=NN.max_error
-          for index = 1 : inputUnits
+          switch NN.training_method
+            case 0
+              NN = NN.incremental_training(inputs, expected_outputs);
+            case 1
+              NN = NN.batch_training();
+          endswitch                 
+        endwhile
+      t=toc
+      output = training_output(NN.current_error,NN.weights,NN.analyzed_rows,outputs,t,inputs); 
+    endfunction
+    
+    function NN = incremental_training(NN, inputs, expected_outputs)
+      
+        inputUnits 		 = rows(inputs);
+        outputs = zeros(size(expected_outputs));
+        
+        for index = 1 : inputUnits
             input  = inputs(index, :);
             NN = NN.calculate_layers(input);
 
@@ -128,18 +146,19 @@ classdef GenericMultiLayerPerceptron
                 NN = NN.updateETA(expected_output-output);
               endif
             endif
-            analized_rows = analized_rows + 1;
+            NN.analyzed_rows = NN.analyzed_rows + 1;
           outputs(index,1)=output; 
         endfor
 
-        error = mean((outputs-expected_outputs).^2);
-        plot(analized_rows, error, '.', "markersize", 15, "color", "r");
+        NN.current_error = mean((outputs-expected_outputs).^2);
+        plot(NN.analyzed_rows, NN.current_error, '.', "markersize", 15, "color", "r");
         pause(0.01)
         hold on
-                 
-        endwhile
-      t=toc
-      output = training_output(error,NN.weights,analized_rows,outputs,t,inputs); 
+    endfunction
+    
+    function NN = batch_training(NN, inputs, expected_outputs)
+        inputUnits 		 = rows(inputs);
+        outputs = zeros(size(expected_outputs));
     endfunction
     
     function NN = deltaCalculation(NN,expected_output, output)
