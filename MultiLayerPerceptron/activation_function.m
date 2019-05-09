@@ -12,9 +12,9 @@ classdef activation_function
         case 0
           ret = AF.linear(x);
         case 1
-          ret = AF.expo(x);
+          ret = AF.sigmoid_exp(x);
         case 2  
-          ret = AF.sigmoid(x);
+          ret = AF.hiperbolic_tangent(x);
       endswitch
     endfunction
     
@@ -23,9 +23,9 @@ classdef activation_function
         case 0
           ret = AF.linear_der(x);
         case 1
-          ret = AF.expo_der(x);
+          ret = AF.sigmoid_exp_der(x);
         case 2  
-          ret = AF.sigmoid_der(x);
+          ret = AF.hiperbolic_tangent_der(x);
       endswitch
     endfunction 
  
@@ -40,23 +40,23 @@ classdef activation_function
 		  ret = x;
     endfunction
 
-    function ret = expo(AF, x)
-		  ret = 1.0 ./ (1.0 + exp(-2 * x));
+    function ret = sigmoid_exp(AF, x)
+		  ret = 1.0 ./ (1.0 + exp(-x));
     endfunction
 
-    function ret = sigmoid(AF, x)
+    function ret = hiperbolic_tangent(AF, x)
 		  ret = tanh(x);
     endfunction
 
     function ret = linear_der(AF, x);
-  		ret = 1; # constante
+  		ret = sign(x); # constante
     endfunction
 
-    function ret = expo_der(AF, x);
-  		ret = 2 * x .* (1-x);
+    function ret = sigmoid_exp_der(AF, x);
+  		ret = x .* (1-x);
     endfunction
 
-    function ret = sigmoid_der(AF, x);
+    function ret = hiperbolic_tangent_der(AF, x);
   		ret = (1 - x.**2); #tanh derivative
     endfunction
   endmethods      

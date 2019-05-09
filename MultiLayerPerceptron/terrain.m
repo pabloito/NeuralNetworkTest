@@ -15,8 +15,11 @@ function output = terrain(N)
   E = terrain(1:end, 1:2);
   S = terrain(1:end, 3);
 
-  E = normalize(E,-1.7,1.7);
-  S = normalize(S,tanh(-1.7),tanh(1.7));
+  #E = min_max_normalize(E,-1.7,1.7);
+  #S = min_max_normalize(S,tanh(-1.7),tanh(1.7));
+  
+  E = gaussian_normalize(E);
+  S = gaussian_normalize(S);
 
   [E,S] = remove_random(1-sample_percentage, E, S);
     
@@ -31,7 +34,12 @@ function output = terrain(N)
   # plot3(E(:,1), E(:,2), calcu lated_output);  
   title ("Neural network's interpretation");
 
-  function norm = normalize(m, x, y)
+  function data_set = gaussian_normalize(m)
+    mean = mean(m);  
+    standard_dev = std(m);
+    data_set = (m - mean) ./ standard_dev;
+  end
+  function norm = min_max_normalize(m, x, y)
     norm = m - min(m(:));
     norm = norm ./ max(norm(:));
     norm = norm*(y-x) + x;
