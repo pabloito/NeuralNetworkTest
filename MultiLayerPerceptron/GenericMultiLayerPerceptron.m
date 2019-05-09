@@ -170,15 +170,17 @@ classdef GenericMultiLayerPerceptron
         
         remainder = mod(inputUnits, NN.batch_quantity);
         if remainder > 0
-          inputs = [inputs; inputs(1:remainder,:)];
-          expected_outputs = [expected_outputs; expected_outputs(1:remainder,:)];
+          extra_rows =NN.batch_quantity-remainder;
+          inputs = [inputs; inputs(1:extra_rows,:)];
+          expected_outputs = [expected_outputs; expected_outputs(1:extra_rows,:)];
         endif
         inputUnits 		 = rows(inputs);
         
         batchs = inputUnits/NN.batch_quantity;
+        inputs
         for i = 1:batchs
           counter = i-1;
-          input_batch = inputs(1 +counter * NN.batch_quantity,:);
+          input_batch = inputs(1 +counter * NN.batch_quantity,:)
           expected_output_batch = expected_outputs(1 +counter * NN.batch_quantity,:);
           NN = NN.train_batch(input_batch,expected_output_batch);
         endfor
@@ -189,6 +191,7 @@ classdef GenericMultiLayerPerceptron
     endfunction
   
     function NN = train_batch(NN, input_batch, expected_output_batch)
+        outputs = zeros(size(expected_output_batch));
         inputUnits 		 = rows(input_batch);
         acum_error = 0;
         for index = 1 : inputUnits
