@@ -19,8 +19,13 @@ function output = terrain(N)
   S = terrain(2:end, 3);
   Z = S;
 
-  E = min_max_normalize(E,-1.7,1.7);
-  S = min_max_normalize(S,tanh(-1.7),tanh(1.7));
+  if(function_type == 1)
+    E = min_max_normalize(E,-1,1);
+    S = min_max_normalize(S,0.26894,0.73106);
+  elseif(function_type == 2)
+    E = min_max_normalize(E,-1.7,1.7);
+    S = min_max_normalize(S,tanh(-1.7),tanh(1.7));
+  endif
 
   #E = gaussian_normalize(E);
   #S = gaussian_normalize(S);
