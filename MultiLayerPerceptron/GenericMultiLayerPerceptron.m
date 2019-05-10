@@ -112,7 +112,7 @@ classdef GenericMultiLayerPerceptron
         #--------------------------------
 
         NN.current_error=NN.max_error;
-
+        NN.current_outputs=zeros(size(expected_outputs));
         figure(1);
         title("Error evolution");
         
@@ -177,12 +177,13 @@ classdef GenericMultiLayerPerceptron
         inputUnits 		 = rows(inputs);
         
         batchs = inputUnits/NN.batch_quantity;
-        inputs
         for i = 1:batchs
           counter = i-1;
-          input_batch = inputs(1 +counter * NN.batch_quantity,:)
-          expected_output_batch = expected_outputs(1 +counter * NN.batch_quantity,:);
-          NN = NN.train_batch(input_batch,expected_output_batch);
+          first_index = 1 + counter * NN.batch_quantity;
+          last_index = (counter+1)*NN.batch_quantity;
+          input_batch = inputs(first_index:last_index,:)
+          expected_output_batch = expected_outputs(first_index:last_index,:);
+          NN = NN.train_batch(input_batch,expected_output_batch,counter);
         endfor
         
         plot(NN.analyzed_rows, NN.current_error, '.', "markersize", 15, "color", "r");
@@ -190,7 +191,8 @@ classdef GenericMultiLayerPerceptron
         hold on
     endfunction
   
-    function NN = train_batch(NN, input_batch, expected_output_batch)
+    function NN = train_batch(NN, input_batch, expected_output_batch,batch_number)
+      input_batch
         outputs = zeros(size(expected_output_batch));
         inputUnits 		 = rows(input_batch);
         acum_error = 0;
@@ -215,8 +217,12 @@ classdef GenericMultiLayerPerceptron
         if(NN.adaptive_learning==1)
           NN = NN.updateETA(expected_output-output);
         endif
-        NN.current_error = mean((expected_output_batch-outputs).^2);
-        NN.current_outputs = outputs;
+        NN.current_error = mean((expected_output_batch-outputs).^2);        
+        first_index = 1 + batch_number * NN.batch_quantity
+        last_index = (batch_number+1)*NN.batch_quantity
+        outputs
+        size(NN.current_outputs)
+        NN.current_outputs(first_index:last_index,1) = outputs;
     endfunction
   
     function NN = deltaCalculation(NN,current_error)
