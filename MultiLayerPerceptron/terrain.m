@@ -84,8 +84,10 @@ function plot_nn(NN, X, Y, Z, X_orig, Y_orig)
     # Interpretation graphic
     colormap('default');
     figure(3)
-    tri = delaunay(X_orig, Y_orig);
-    trisurf(tri, X_orig, Y_orig, z_n,'facecolor','interp');
+    [A B] = meshgrid(X_orig, Y_orig);
+    tri = delaunay(A, B);
+    trisurf(tri, A, B, z_n,'facecolor','interp');
+    #trisurf(tri, X_orig, Y_orig, z_n,'facecolor','interp');
     #plot3(X_orig, Y_orig, z_n, '.');
     title ("Neural network's interpretation");
 endfunction
