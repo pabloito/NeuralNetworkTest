@@ -32,11 +32,12 @@ function output = terrain(N)
 
   # Terrain graphic
   colormap('default');
-  #[X Y] = meshgrid(X, Y);
-  #tri = delaunay(X, Y;
-  #trisurf(tri,X, Y, Z,'facecolor','interp');
   figure(2)
-  plot3(X, Y, Z, '.');
+  [A B] = meshgrid(X, Y);
+  tri = delaunay(A, B);
+  trisurf(tri, A, B, Z,'facecolor','interp');
+  
+  #plot3(X, Y, Z, '.');
   title ("Terrain");
   hold on
 
@@ -77,10 +78,10 @@ function plot_nn(NN, X, Y, Z, X_orig, Y_orig)
     
     # Interpretation graphic
     colormap('default');
-    #tri = delaunay(X, Y);
-    #trisurf(tri,X_orid, Y_orig, z_n,'facecolor','interp');
     figure(3)
-    plot3(X_orig, Y_orig, z_n, '.');
+    tri = delaunay(X_orig, Y_orig);
+    trisurf(tri, X_orig, Y_orig, z_n,'facecolor','interp');
+    #plot3(X_orig, Y_orig, z_n, '.');
     title ("Neural network's interpretation");
 endfunction
 
