@@ -142,7 +142,6 @@ classdef GenericMultiLayerPerceptron
             expected_output = expected_outputs(index);
             output = NN.layers{NN.hidden_layers+2};
             
-            if(output != expected_output)
               #calculate Deltas
               NN = NN.deltaCalculation(expected_output-output);
               
@@ -152,7 +151,6 @@ classdef GenericMultiLayerPerceptron
               if(NN.adaptive_learning==1)
                 NN = NN.updateETA(expected_output-output);
               endif
-            endif
             NN.analyzed_rows = NN.analyzed_rows + 1;
           outputs(index,1)=output; 
         endfor

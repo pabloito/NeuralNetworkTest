@@ -56,7 +56,7 @@ function output = terrain(N)
 
   function norm = min_max_normalize(m, x, y)
     norm = m - min(m(:));
-    norm = norm ./ max(norm(:));
+    norm = norm ./ max(m(:));
     norm = norm*(y-x) + x;
   endfunction
 
