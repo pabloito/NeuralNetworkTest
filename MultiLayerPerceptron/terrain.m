@@ -20,8 +20,6 @@ function output = terrain(N)
   Z = S;
 
   if(function_type == 1)
-    E = min_max_normalize(E,-1,1);
-    S = min_max_normalize(S,0.26894,0.73106);
   elseif(function_type == 2)
     E = min_max_normalize(E,-1.7,1.7);
     S = min_max_normalize(S,tanh(-1.7),tanh(1.7));
