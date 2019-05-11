@@ -71,7 +71,9 @@ function plot_nn(NN, weights, X, Y, Z, X_orig, Y_orig)
         z_n(index) = run_pattern(NN, weights, [X(index); Y(index)]);
     endfor
 
-    z_n = min_max_normalize(z_n, min(Z), max(Z));
+    if(NN.activation.fun_type == 2)
+      z_n = min_max_normalize(z_n, min(Z), max(Z));
+    endif
     
     # Interpretation graphic
     colormap('default');
