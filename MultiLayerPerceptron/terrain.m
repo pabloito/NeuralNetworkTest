@@ -36,13 +36,11 @@ function output = terrain(N)
   output = NN.train_weights(E_rand,S_rand);
 
   # Terrain graphic
+  clf;
   colormap('default');
   figure(2)
-  ##tri = delaunay(A, B);
-  #[A B] = meshgrid(X, Y);
-  #trisurf(tri, A, B, Z,'facecolor','interp');
-  
-  plot3(X, Y, Z, '.');
+  tri = delaunay(X, Y);
+  trisurf(tri, X, Y, Z, 'facecolor', 'interp');
   title ("Terrain");
   hold on
 
@@ -80,13 +78,11 @@ function plot_nn(NN, weights, X, Y, Z, X_orig, Y_orig)
     z_n = min_max_normalize(z_n, min(Z), max(Z));
     
     # Interpretation graphic
+    clf;
     colormap('default');
     figure(3)
-    #[A B] = meshgrid(X_orig, Y_orig);
-    #tri = delaunay(A, B);
-    #trisurf(tri, A, B, z_n,'facecolor','interp');
-    #trisurf(tri, X_orig, Y_orig, z_n,'facecolor','interp');
-    plot3(X_orig, Y_orig, z_n, '.');
+    tri = delaunay(X_orig, Y_orig);
+    trisurf(tri, X_orig, Y_orig, z_n, 'facecolor', 'interp');
     title ("Neural network's interpretation");
 endfunction
 
