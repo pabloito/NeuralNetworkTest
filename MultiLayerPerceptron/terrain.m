@@ -1,6 +1,4 @@
-function output = terrain(N)
-  source("config.conf");
-
+function output = terrain(N,sample_percentage)
   if(N<=0 || N>14)
     display("flasheaste");
     return;
@@ -19,8 +17,10 @@ function output = terrain(N)
   S = terrain(2:end, 3);
   Z = S;
 
-  if(function_type == 1)
-  elseif(function_type == 2)
+  GenericMultiLayerPerceptron();
+  global NN
+  
+  if(NN.activation.fun_type == 2)
     E = min_max_normalize(E,-1.7,1.7);
     S = min_max_normalize(S,tanh(-1.7),tanh(1.7));
   endif
@@ -30,8 +30,7 @@ function output = terrain(N)
 
   [E_rand,S_rand] = remove_random(1-sample_percentage, E, S);
     
-  NN = GenericMultiLayerPerceptron();
-  output = NN.train_weights(E_rand,S_rand);
+  output = train_weights(E_rand,S_rand);
 
   # Terrain graphic
   colormap('default');
