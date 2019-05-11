@@ -23,6 +23,8 @@ function output = train_weights(inputs, expected_outputs)
         expected_output = expected_outputs(index);
         output = NN.layers{NN.hidden_layers+2};
         
+        NN.layers
+        
         if(output != expected_output)
           #calculate Deltas
           deltaCalculation(expected_output, output);

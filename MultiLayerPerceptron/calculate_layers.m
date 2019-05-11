@@ -13,8 +13,9 @@ function calculate_layers(row)
      #Don't add bias if layer is last layer 
      if(current_layer!=NN.hidden_layers +1)
       current_output = [NN.bias; current_output];
+      current_output = NN.activation.apply(current_output);
      endif
      #Add output to structure
-     NN.layers(current_layer+1)= NN.activation.apply(current_output);
+     NN.layers(current_layer+1)= current_output;
   endfor
 endfunction

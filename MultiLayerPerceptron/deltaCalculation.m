@@ -6,13 +6,16 @@ function deltaCalculation(expected_output, output)
   for layer_index = NN.hidden_layers + 2 : -1 : 2
           
     current_layer = NN.layers{layer_index};
-    
-    current_delta = NN.activation.apply_der(current_layer).*current_error;
+    current_delta = [];
+    if layer_index == NN.hidden_layers +2
+      current_delta = current_error;
+    else
+      current_delta = NN.activation.apply_der(current_layer).*current_error;
+    endif
     
     if layer_index != NN.hidden_layers + 2 
       #Remove bias
       current_delta(1) = [];
-      
     endif 
 
     NN.deltas(layer_index) = current_delta; 

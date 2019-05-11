@@ -18,7 +18,7 @@ function output = xor(N)
     return;
   endswitch
   
-  NN = GenericMultiLayerPerceptron();
-  output = NN.train_weights(input,expected_output);
+  GenericMultiLayerPerceptron();
+  train_weights(input,expected_output);
   
 endfunction
