@@ -1,11 +1,6 @@
 function output = train_weights(inputs, expected_outputs)
   global NN;
   tic
-    #------Randomize Entry Data------
-    perm = randperm(size(inputs, 1));
-    inputs = shuffle(inputs,perm);
-    expected_outputs = shuffle(expected_outputs,perm);
-    #--------------------------------
     inputUnits 		 = rows(inputs);
     
     outputs = zeros(size(expected_outputs));
@@ -16,6 +11,13 @@ function output = train_weights(inputs, expected_outputs)
     title("Error evolution");
     
     while error>=NN.max_error
+      
+      #------Randomize Entry Data------
+      perm = randperm(size(inputs, 1));
+      inputs = shuffle(inputs,perm);
+      expected_outputs = shuffle(expected_outputs,perm);
+      #--------------------------------
+      
       for index = 1 : inputUnits
         input  = inputs(index, :);
         calculate_layers(input);
