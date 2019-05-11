@@ -134,7 +134,7 @@ classdef GenericMultiLayerPerceptron
 
         error = mean((outputs-expected_outputs).^2);
         plot(analized_rows, error, '.', "markersize", 15, "color", "r");
-        pause(0.01)
+        pause(0.0000001)
         hold on
                  
         endwhile
