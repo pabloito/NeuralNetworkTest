@@ -36,7 +36,6 @@ function output = terrain(N)
   output = NN.train_weights(E_rand,S_rand);
 
   # Terrain graphic
-  clf;
   colormap('default');
   figure(2)
   tri = delaunay(X, Y);
@@ -78,12 +77,12 @@ function plot_nn(NN, weights, X, Y, Z, X_orig, Y_orig)
     z_n = min_max_normalize(z_n, min(Z), max(Z));
     
     # Interpretation graphic
-    clf;
     colormap('default');
     figure(3)
     tri = delaunay(X_orig, Y_orig);
     trisurf(tri, X_orig, Y_orig, z_n, 'facecolor', 'interp');
     title ("Neural network's interpretation");
+    hold on
 endfunction
 
 function output = run_pattern(NN, weights, row)
