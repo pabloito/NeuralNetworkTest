@@ -1,14 +1,5 @@
-function output = terrain(N,sample_percentage)
-  if(N<=0 || N>14)
-    display("flasheaste");
-    return;
-  endif
-
-  if(N<10)
-    terrain = dlmread(strcat("terrain/terrain0",num2str(N),".data"));
-  else
-    terrain = dlmread(strcat("terrain/terrain",num2str(N),".data"));
-  endif
+function output = terrain(path, sample_percentage)
+  terrain = dlmread(path);
 
   E = terrain(2:end, 1:2);
   X = E(:,1);
