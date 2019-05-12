@@ -32,6 +32,8 @@ function output = train_weights_batch(inputs, expected_outputs)
     
     epoch_outputs = zeros(size(expected_outputs));
     
+    
+    
     for batch_index = 1 : batchUnits
       
       current_batch = batches{batch_index};
@@ -39,31 +41,41 @@ function output = train_weights_batch(inputs, expected_outputs)
       current_batch_size = rows(current_batch);
       
       outputs = zeros(size(currented_expected_batch));
+      
+      final_weight_increments = cell(NN.hidden_layers+1,1);
+      
       for row_index =1:current_batch_size          
         input  = current_batch(row_index, :);
         calculate_layers(input);
         
         output = NN.layers{NN.hidden_layers+2};
+        expected_output = currented_expected_batch(row_index);
+        
+        error = expected_output-output;
+        #calculate Deltas
+        deltaCalculation(error);
+        
+        current_weight_increments=batch_weight_incrementals_calc();
+        
+        final_weight_increments = sum_weight_increments(final_weight_increments,current_weight_increments);
         
         outputs(row_index)=output;
         analyzed_rows = analyzed_rows + 1;
       endfor
-      acum_error = mean(currented_expected_batch-outputs);
-      #calculate Deltas
-      deltaCalculation(acum_error);
-      
       #update weights
-      incrementalWeightUpdate();
+      for j=1:NN.hidden_layers+1
+        NN.weights{j}= NN.weights{j}+final_weight_increments{j}';
+      endfor    
 
       if(NN.adaptive_learning==1)
-        updateETA(acum_error);
+        updateETA(mean(currented_expected_batch-outputs));
       endif
       output_size = rows(outputs);
       first_output_index = 1+ (batch_index-1)*NN.batch_quantity;
       last_output_index = first_output_index + output_size-1;
       epoch_outputs(first_output_index:last_output_index,:)=outputs;
     endfor
-
+    
   error = mean((epoch_outputs-expected_outputs).^2)
   analyzed_epochs = analyzed_epochs+1
   plot(analyzed_epochs, error, '.', "markersize", 15, "color", "r");
@@ -72,7 +84,7 @@ function output = train_weights_batch(inputs, expected_outputs)
            
   endwhile
   t=toc
-  output = training_output(error,NN.weights,analyzed_rows,outputs,t,inputs); 
+  output = training_output(error,NN.weights,analyzed_rows,epoch_outputs,t,inputs); 
 endfunction
 
 function batches = get_batches(inputs, batch_quantity)
