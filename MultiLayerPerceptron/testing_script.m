@@ -7,7 +7,7 @@ function testing_script(filename_out, filename_in)
 
     epochs = [];
     for i=1:10
-        epochs = [epochs, train(filename_in, sample_percentage).analyzed_epochs]
+        epochs = [epochs, train(filename_in, 0.9).analyzed_epochs]
     endfor
 
     avg = mean(epochs);
