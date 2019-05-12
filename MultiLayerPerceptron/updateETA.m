@@ -3,7 +3,7 @@ function eta_updates = updateETA(current_error, eta_plot, eta_updates)
   persistent previous_errors = [];
   persistent previous_errors_diff = [0];
   persistent k = 0;
-
+    
   if ( k < NN.learning_rate_k)
     previous_errors = [previous_errors current_error];
     if ( k < NN.learning_rate_k -1)

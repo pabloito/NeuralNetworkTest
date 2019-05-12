@@ -22,7 +22,16 @@ function output = train(path, sample_percentage)
 
   [E_rand,S_rand] = remove_random(1-sample_percentage, E, S);
     
-  output = train_weights(E_rand,S_rand);
+  output=[];
+  switch NN.method
+    case 0
+      output = train_weights(E_rand,S_rand);
+    case 1
+      output = train_weights_batch(E_rand,S_rand);
+    otherwise
+      fprintf("ERROR: Unrecognized Method: '%d'",NN.method);
+  endswitch
+    
 
   # Terrain graphic
   colormap('default');

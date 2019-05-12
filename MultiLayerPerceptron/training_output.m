@@ -20,7 +20,7 @@ classdef training_output
     endfunction
     
     function mat = output_matrix(TO)
-      fprintf("\t[%d,%d]= %d\n",[TO.input,TO.output].');
+        fprintf("\t[%d,%d]= %d\n",[TO.input,TO.output].');
     endfunction
   endmethods
 endclassdef

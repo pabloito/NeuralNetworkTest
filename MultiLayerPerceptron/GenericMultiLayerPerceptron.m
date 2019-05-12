@@ -13,6 +13,8 @@ function NN = GenericMultiLayerPerceptron()
  NN.max_error = max_error;
  NN.activation = activation_function(function_type);
  NN.bias=-1;
+ NN.batch_quantity=batch_quantity;
+ NN.method = method;
 
  NN.layers = cell(NN.hidden_layers+2,1);
  initialize_multi_layer_perceptron();

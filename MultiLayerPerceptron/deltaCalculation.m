@@ -1,7 +1,5 @@
-function deltaCalculation(expected_output, output)
+function deltaCalculation(current_error)
   global NN;
-  #Error for last (output) layer 
-  current_error = expected_output-output;
   #Decreasing loop (from last layer to first layer)
   for layer_index = NN.hidden_layers + 2 : -1 : 2
           
