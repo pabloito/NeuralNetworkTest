@@ -1,5 +1,5 @@
-function output = terrain(path, sample_percentage)
-  graphics_toolkit("gnuplot")
+function output = train(path, sample_percentage)
+  #graphics_toolkit("gnuplot")
   terrain = dlmread(path);
 
   E = terrain(2:end, 1:2);
