@@ -9,8 +9,8 @@ function output = train_weights(inputs, expected_outputs)
     error_updates = 0;
     eta_updates = 0;
 
-    error_plot = figure(1, 'name', 'Error evolution', 'numbertitle', 'off', 'position', [500 500 580 380]);
-    eta_plot = figure(2, 'name', 'Eta evolution', 'numbertitle', 'off', 'position', [1100 500 580 380]);
+    error_plot = figure(1, 'name', 'Error evolution', 'numbertitle', 'off', 'position', [400 600 580 380]);
+    eta_plot = figure(2, 'name', 'Eta evolution', 'numbertitle', 'off', 'position', [1000 600 580 380]);
     
     while error>=NN.max_error
       

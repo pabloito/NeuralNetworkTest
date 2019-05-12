@@ -1,4 +1,5 @@
 function output = terrain(path, sample_percentage)
+  graphics_toolkit("gnuplot")
   terrain = dlmread(path);
 
   E = terrain(2:end, 1:2);
@@ -25,7 +26,7 @@ function output = terrain(path, sample_percentage)
 
   # Terrain graphic
   colormap('default');
-  figure(3, 'name', 'Terrain', 'numbertitle', 'off', 'position', [500 200 580 380]);
+  figure(3, 'name', 'Terrain', 'numbertitle', 'off', 'position', [400 100 580 380]);
   tri = delaunay(X, Y);
   trisurf(tri, X, Y, Z, 'facecolor', 'interp');
   hold on
@@ -67,7 +68,7 @@ function plot_nn(NN, weights, X, Y, Z, X_orig, Y_orig)
     
     # Interpretation graphic
     colormap('default');
-    figure(4, 'name', "Neural network's interpretation", 'numbertitle', 'off', 'position', [1100 200 580 380]);
+    figure(4, 'name', "Neural network's interpretation", 'numbertitle', 'off', 'position', [1000 100 580 380]);
     tri = delaunay(X_orig, Y_orig);
     trisurf(tri, X_orig, Y_orig, z_n, 'facecolor', 'interp');
     hold on
@@ -92,7 +93,7 @@ function output = run_pattern(NN, weights, row)
          NN.layers(current_layer+1)= NN.activation.apply(current_output);
 
          if (current_layer == NN.hidden_layers + 1)
-            output = NN.activation.apply(current_output)
+            output = NN.activation.apply(current_output);
          endif
       endfor
 endfunction
