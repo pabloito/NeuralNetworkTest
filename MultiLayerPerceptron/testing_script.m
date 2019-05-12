@@ -1,4 +1,4 @@
-function testing_script(filename_out, filename_in, sample, iterations)
+function testing_script(filename_out, filename_in)
     source("config.conf");
     file = fopen(filename_out, 'w');
 
@@ -6,8 +6,8 @@ function testing_script(filename_out, filename_in, sample, iterations)
     fprintf(file, num2str(max_error)); 
 
     epochs = [];
-    for i=1:iterations
-        epochs = [epochs, train(filename_in, sample).analyzed_epochs]
+    for i=1:10
+        epochs = [epochs, train(filename_in, sample_percentage).analyzed_epochs]
     endfor
 
     avg = mean(epochs);
