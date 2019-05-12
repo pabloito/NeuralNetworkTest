@@ -27,7 +27,7 @@ function output = train_weights(inputs, expected_outputs)
         
         if(output != expected_output)
           #calculate Deltas
-          deltaCalculation(expected_output, output);
+          deltaCalculation(expected_output - output);
           
           #update weights
           incrementalWeightUpdate();

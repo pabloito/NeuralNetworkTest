@@ -30,7 +30,7 @@ function output = terrain(N,sample_percentage)
 
   [E_rand,S_rand] = remove_random(1-sample_percentage, E, S);
     
-  output = train_weights(E_rand,S_rand);
+  output = train_weights_batch(E_rand,S_rand);
 
   # Terrain graphic
   colormap('default');
