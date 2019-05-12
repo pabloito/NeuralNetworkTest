@@ -1,12 +1,16 @@
-function testing_script(filename, iterations)
+function testing_script(filename, sample, iterations)
+    source("config.conf");
     file = fopen(filename, 'w');
 
-    time = [];
+    fprintf(file, "error: "); 
+    fprintf(file, max_error); 
+
+    epochs = [];
     for i=1:iterations
-        time = [time, terrain(9).elapsed_time]
+        epochs = [epochs, terrain(filename, sample).analyzed_epochs]
     endfor
 
-    avg = mean(time);
+    avg = mean(epochs);
 
     fprintf(file, num2str(avg));
 endfunction
