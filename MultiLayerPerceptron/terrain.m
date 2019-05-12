@@ -25,10 +25,9 @@ function output = terrain(path, sample_percentage)
 
   # Terrain graphic
   colormap('default');
-  figure(2)
+  figure(3, 'name', 'Terrain', 'numbertitle', 'off', 'position', [500 200 580 380]);
   tri = delaunay(X, Y);
   trisurf(tri, X, Y, Z, 'facecolor', 'interp');
-  title ("Terrain");
   hold on
 
   plot_nn(NN, output.weights, E(:,1), E(:,2), Z, X, Y);
@@ -68,10 +67,9 @@ function plot_nn(NN, weights, X, Y, Z, X_orig, Y_orig)
     
     # Interpretation graphic
     colormap('default');
-    figure(3)
+    figure(4, 'name', "Neural network's interpretation", 'numbertitle', 'off', 'position', [1100 200 580 380]);
     tri = delaunay(X_orig, Y_orig);
     trisurf(tri, X_orig, Y_orig, z_n, 'facecolor', 'interp');
-    title ("Neural network's interpretation");
     hold on
 endfunction
 

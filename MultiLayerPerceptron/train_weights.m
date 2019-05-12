@@ -6,9 +6,11 @@ function output = train_weights(inputs, expected_outputs)
     outputs = zeros(size(expected_outputs));
     error=NN.max_error;
     analized_rows = 0;
+    error_updates = 0;
+    eta_updates = 0;
 
-    figure(1);
-    title("Error evolution");
+    error_plot = figure(1, 'name', 'Error evolution', 'numbertitle', 'off', 'position', [500 500 580 380]);
+    eta_plot = figure(2, 'name', 'Eta evolution', 'numbertitle', 'off', 'position', [1100 500 580 380]);
     
     while error>=NN.max_error
       
@@ -33,17 +35,19 @@ function output = train_weights(inputs, expected_outputs)
           incrementalWeightUpdate();
 
           if(NN.adaptive_learning==1)
-            updateETA(expected_output-output);
+            eta_updates = updateETA(expected_output-output, eta_plot, eta_updates);
           endif
         endif
         analized_rows = analized_rows + 1;
-      outputs(index,1)=output; 
-    endfor
+        outputs(index,1)=output; 
+      endfor
 
-    error = mean((outputs-expected_outputs).^2);
-    plot(analized_rows, error, '.', "markersize", 15, "color", "r");
-    pause(0.0000001)
-    hold on
+      error = mean((outputs-expected_outputs).^2);
+      figure(error_plot);
+      plot(error_updates, error, '.', 'markersize', 15, 'color', 'r');
+      pause(0.0000001)
+      hold on
+      error_updates = error_updates + 1;
              
     endwhile
   t=toc

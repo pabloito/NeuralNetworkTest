@@ -16,6 +16,7 @@ classdef training_output
       obj.elapsed_time = elapsed_time;
       obj.input = input_val;
     endfunction
+    
     function mat = output_matrix(TO)
       fprintf("\t[%d,%d]= %d\n",[TO.input,TO.output].');
     endfunction
