@@ -21,9 +21,9 @@ function eta_updates = updateETA(current_error, eta_plot, eta_updates)
       NN.learning_rate = NN.learning_rate + NN.learning_rate_a;          
     endif
     
-    figure(eta_plot);
-    plot(eta_updates, NN.learning_rate, '.', 'markersize', 15, 'color', 'b');
-    hold on
+    #figure(eta_plot);
+    #plot(eta_updates, NN.learning_rate, '.', 'markersize', 15, 'color', 'b');
+    #hold on
     eta_updates = eta_updates + 1;
     
     previous_errors = [];
