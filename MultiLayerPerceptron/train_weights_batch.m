@@ -77,15 +77,15 @@ function output = train_weights_batch(inputs, expected_outputs)
       epoch_outputs(first_output_index:last_output_index,:)=outputs;
     endfor
     
-  error = mean((epoch_outputs-expected_outputs).^2)
-  analyzed_epochs = analyzed_epochs+1
+  error = mean((epoch_outputs-expected_outputs).^2);
+  analyzed_epochs = analyzed_epochs+1;
   plot(analyzed_epochs, error, '.', "markersize", 15, "color", "r");
   pause(0.0000001);
   hold on;
            
   endwhile
   t=toc
-  output = training_output(error,NN.weights,analyzed_rows,epoch_outputs,t,inputs); 
+  output = training_output(error,NN.weights,analyzed_rows,epoch_outputs,t,inputs,analyzed_epochs); 
 endfunction
 
 function batches = get_batches(inputs, batch_quantity)
