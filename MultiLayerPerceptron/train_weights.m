@@ -10,7 +10,9 @@ function output = train_weights(inputs, expected_outputs)
     analyzed_epochs =0;
 
     error_plot = figure(1, 'name', 'Error evolution', 'numbertitle', 'off', 'position', [400 600 580 380]);
-    eta_plot = figure(2, 'name', 'Eta evolution', 'numbertitle', 'off', 'position', [1000 600 580 380]);
+    if(NN.adaptive_learning==1)
+      eta_plot = figure(2, 'name', 'Eta evolution', 'numbertitle', 'off', 'position', [1000 600 580 380]);
+    endif
     
     while error>=NN.max_error
       
